@@ -3,54 +3,75 @@ const itemTemplateLabel = document.querySelector('.new-item-template'),
     addButton = itemTemplateLabel.querySelector('button'),
     ul = document.querySelector('.list ul')
 
-const textColor = '#333',
-    accentColor = '#777'
-
-const buildCheckbox = () => {
-    const checkbox = document.createElement('input')
-    checkbox.type = 'checkbox'
-    checkbox.classList.add('item-check')
-    return checkbox
-}
-
-const buildSpan = (value) => {
-    const span = document.createElement('span')
-    span.innerText = value
-    return span
-}
-
-const buildLi = () =>  {
-    const li = document.createElement('li')
-    return li
-}
-
-const addItem = () => {
-    if(!newItemInput.value) {
-        return
+class MiniDo {
+    constructor() {
+        this.textColor = '#333'
+        this.accentColor = '#777'
+        this.currentContent = ''
     }
-    const li = buildLi()
-    const span =  buildSpan(newItemInput.value)
-    const checkbox = buildCheckbox()
-    li.appendChild(span)
-    ul.prepend(li)
-    li.insertBefore(checkbox, span)
-    newItemInput.value = ''
-    newItemInput.focus()
+
+    static buildCheckbox() {
+        const checkbox = document.createElement('input')
+        checkbox.type = 'checkbox'
+        checkbox.classList.add('item-check')
+        return checkbox
+    }
+
+    buildSpan() {
+        const span = document.createElement('span')
+        span.innerText = this.currentContent
+        return span
+    }
+
+    static buildLi() {
+        const li = document.createElement('li')
+        return li
+    }
+
+    static toggleStrike(target) {
+        target.nextSibling.classList.toggle('strike-through')
+    }
+
+    setContent(value) {
+        this.currentContent = value
+    }
+
+    addItem() {
+        if(!this.currentContent) {
+            return
+        }
+        const li = MiniDo.buildLi()
+        const span =  this.buildSpan()
+        const checkbox = MiniDo.buildCheckbox()
+        li.appendChild(span)
+        ul.prepend(li)
+        li.insertBefore(checkbox, span)
+        this.currentContent = ''
+        newItemInput.value = ''
+        newItemInput.focus()
+    }
+
 }
 
-const toggleStrike = (target) => {
-    target.nextSibling.classList.toggle('strike-through')
-}
+const miniDo = new MiniDo()
 
-addButton.addEventListener('click', addItem)
 newItemInput.addEventListener('keypress', (event) => {
     if(event.key === 'Enter') {
-        addItem()
+        miniDo.addItem()
     }
 })
+
+newItemInput.addEventListener('keyup', (event) => {
+    miniDo.setContent(event.target.value)
+})
+
+addButton.addEventListener('click', () => {
+    miniDo.addItem()
+})
+
 ul.addEventListener('click', (event) => {
     if(event.target.classList.contains('item-check')) {
-        toggleStrike(event.target)
+        MiniDo.toggleStrike(event.target)
     }
 })
 
