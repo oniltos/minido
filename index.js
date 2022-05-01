@@ -9,6 +9,9 @@ const ul = document.querySelector('.list ul')
 
 
 const addItem = () => {
+    if(!newItemInput.value) {
+        return
+    }
     const li = document.createElement('li')
     const span = document.createElement('span')
     const checkbox = document.createElement('input')
