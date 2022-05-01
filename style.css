@@ -1,0 +1,53 @@
+body{
+    font-size: 16px;
+}
+
+main {
+    width: 40vw;
+    min-height: 80vh;
+    margin: 0 auto;
+    border-radius: 5px;
+    padding: 5px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 1rem;
+}
+
+main ul {
+    list-style-type: none;
+}
+
+main ul li + li {
+    display: flex;
+    padding: 10px 5px 0;
+    align-items: center;
+}
+
+main ul li + li span {
+    margin-left: 5px;
+    line-height: 15px;
+}
+
+main ul li + li input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    border: solid 1px #777;
+    color: #fff;
+    accent-color: rgb(200, 200, 200);
+}
+
+.new-item-template {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.new-item-template input[type=text] {
+    color: #777;
+    border:none;
+    border-bottom: 1px solid #e0e0e0;
+    width: 80%;
+}
+
+.new-item-template input[type=text]:focus {
+    outline: none;
+}
