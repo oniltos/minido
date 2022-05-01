@@ -47,6 +47,7 @@ main ul li input[type="checkbox"] {
     border:none;
     border-bottom: 1px solid #e0e0e0;
     width: 80%;
+    font-size: 1rem;
 }
 
 .new-item-template input[type=text]:focus {
