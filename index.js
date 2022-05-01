@@ -1,15 +1,15 @@
 const itemTemplateLabel = document.querySelector('.new-item-template'),
-    newItemInput = document.querySelector('.new-item-template input[type="text"]')
+    newItemInput = document.querySelector('.new-item-template input[type="text"]'),
+    addButton = itemTemplateLabel.querySelector('button'),
+    ul = document.querySelector('.list ul')
 
-const textColor = '#333'
-const accentColor = '#777'
-
-const addButton = itemTemplateLabel.querySelector('button')
-const ul = document.querySelector('.list ul')
+const textColor = '#333',
+    accentColor = '#777'
 
 const buildCheckbox = () => {
     const checkbox = document.createElement('input')
     checkbox.type = 'checkbox'
+    checkbox.classList.add('item-check')
     return checkbox
 }
 
@@ -24,13 +24,11 @@ const buildLi = () =>  {
     return li
 }
 
-
 const addItem = () => {
     if(!newItemInput.value) {
         return
     }
     const li = buildLi()
-    console.log(li)
     const span =  buildSpan(newItemInput.value)
     const checkbox = buildCheckbox()
     li.appendChild(span)
@@ -40,10 +38,19 @@ const addItem = () => {
     newItemInput.focus()
 }
 
+const toggleStrike = (target) => {
+    target.nextSibling.classList.toggle('strike-through')
+}
+
 addButton.addEventListener('click', addItem)
 newItemInput.addEventListener('keypress', (event) => {
     if(event.key === 'Enter') {
         addItem()
+    }
+})
+ul.addEventListener('click', (event) => {
+    if(event.target.classList.contains('item-check')) {
+        toggleStrike(event.target)
     }
 })
 
