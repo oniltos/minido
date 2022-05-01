@@ -8,13 +8,53 @@ class MiniDo {
         this.textColor = '#333'
         this.accentColor = '#777'
         this.currentContent = ''
+        this.items = []
+        this.populate()
     }
 
-    static buildCheckbox() {
+    static buildCheckbox(checked) {
         const checkbox = document.createElement('input')
         checkbox.type = 'checkbox'
         checkbox.classList.add('item-check')
+        if(checked) {
+            checkbox.checked = true
+        }
         return checkbox
+    }
+
+    static buildLi() {
+        const li = document.createElement('li')
+        return li
+    }
+
+    toggleStrike(target) {
+        const element = target.nextSibling;
+        const parent = element.parentNode;
+        element.classList.toggle('strike-through')
+        const index = this.items.findIndex(i => i.id === parent.getAttribute('data-id'))
+        this.items[index].state = !this.items[index].state
+        this.sync()
+    }
+
+    static getUniqueId() {
+        return performance.now().toString(36)
+    }
+
+    appendItem(item) {
+        const li = MiniDo.buildLi()
+        const span =  this.buildSpan()
+        console.log(item)
+        if(item.state) {
+            span.classList.add('strike-through')
+        }
+        const checkbox = MiniDo.buildCheckbox(item.state)
+        li.appendChild(span)
+        li.setAttribute('data-id', item.id)
+        ul.prepend(li)
+        li.insertBefore(checkbox, span)
+        this.currentContent = ''
+        newItemInput.value = ''
+        newItemInput.focus()
     }
 
     buildSpan() {
@@ -23,32 +63,39 @@ class MiniDo {
         return span
     }
 
-    static buildLi() {
-        const li = document.createElement('li')
-        return li
-    }
-
-    static toggleStrike(target) {
-        target.nextSibling.classList.toggle('strike-through')
-    }
-
     setContent(value) {
         this.currentContent = value
+    }
+
+    sync() {
+        localStorage.setItem('miniDo_data', JSON.stringify(this.items))
+    }
+
+    populate() {
+        const storedItems = localStorage.getItem('miniDo_data')
+        if(storedItems) {
+            this.items = JSON.parse(storedItems)
+            this.items.forEach((item) => {
+                this.currentContent = item.content
+                this.appendItem(item)
+            })
+        }
     }
 
     addItem() {
         if(!this.currentContent) {
             return
         }
-        const li = MiniDo.buildLi()
-        const span =  this.buildSpan()
-        const checkbox = MiniDo.buildCheckbox()
-        li.appendChild(span)
-        ul.prepend(li)
-        li.insertBefore(checkbox, span)
-        this.currentContent = ''
-        newItemInput.value = ''
-        newItemInput.focus()
+
+        const item = {
+            id: MiniDo.getUniqueId(),
+            content: this.currentContent,
+            state: false
+        }
+
+        this.items.push(item)
+        this.sync()
+        this.appendItem(item)
     }
 
 }
@@ -71,7 +118,7 @@ addButton.addEventListener('click', () => {
 
 ul.addEventListener('click', (event) => {
     if(event.target.classList.contains('item-check')) {
-        MiniDo.toggleStrike(event.target)
+        miniDo.toggleStrike(event.target)
     }
 })
 
