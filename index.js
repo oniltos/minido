@@ -15,7 +15,7 @@ const addItem = () => {
     checkbox.type = 'checkbox'
     span.innerText = newItemInput.value
     li.appendChild(span)
-    ul.appendChild(li)
+    ul.prepend(li)
     li.insertBefore(checkbox, span)
     newItemInput.value = ''
     newItemInput.focus()

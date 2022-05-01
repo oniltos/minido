@@ -14,20 +14,21 @@ main {
 
 main ul {
     list-style-type: none;
+    padding-left: 0;
 }
 
-main ul li + li {
+main ul li {
     display: flex;
     padding: 10px 5px 0;
     align-items: center;
 }
 
-main ul li + li span {
+main ul li span {
     margin-left: 5px;
     line-height: 15px;
 }
 
-main ul li + li input[type="checkbox"] {
+main ul li input[type="checkbox"] {
     width: 18px;
     height: 18px;
     border: solid 1px #777;
