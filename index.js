@@ -8,7 +8,7 @@ const addButton = itemTemplateLabel.querySelector('button')
 const ul = document.querySelector('.list ul')
 
 
-const addItem = (event) => {
+const addItem = () => {
     const li = document.createElement('li')
     const span = document.createElement('span')
     const checkbox = document.createElement('input')
@@ -22,4 +22,9 @@ const addItem = (event) => {
 }
 
 addButton.addEventListener('click', addItem)
+newItemInput.addEventListener('keypress', (event) => {
+    if(event.key === 'Enter') {
+        addItem()
+    }
+})
 
