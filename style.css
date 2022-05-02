@@ -63,3 +63,12 @@ main ul li input[type="checkbox"] {
 .new-item-template input[type=text]:focus {
     outline: none;
 }
+
+@media screen and (max-width: 979px) {
+    main {
+        width: 80vw;
+    }
+    h1 {
+        font-size: 1.4rem;
+    }
+}
