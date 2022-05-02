@@ -1,1 +1,1 @@
-#MiniDo - the minimalist todo
+# MiniDo - the minimalist todo
