@@ -68,7 +68,8 @@ main ul li input[type="checkbox"] {
     main {
         width: 80vw;
     }
-    h1 {
+    main h1 {
         font-size: 1.4rem;
+        margin-bottom: 40px;
     }
 }
