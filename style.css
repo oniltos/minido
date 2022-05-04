@@ -46,6 +46,19 @@ main ul li input[type="checkbox"] {
     accent-color: rgb(200, 200, 200);
 }
 
+main ul li button {
+    display: none;
+    border: 1px dashed #777;
+    background: #fff;
+    border-radius: 4px;
+    margin-left: 10px;
+    cursor: pointer;
+}
+
+main ul li:hover button {
+    display: block;
+}
+
 .new-item-template {
     display: flex;
     justify-content: space-between;

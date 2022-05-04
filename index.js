@@ -27,6 +27,13 @@ class MiniDo {
         return li
     }
 
+    static builtButton(text) {
+        const button = document.createElement('button')
+        button.innerHTML = text
+        button.classList.add('remove-button')
+        return button
+    }
+
     toggleStrike(target) {
         const element = target.nextSibling;
         const parent = element.parentNode;
@@ -48,7 +55,9 @@ class MiniDo {
             span.classList.add('strike-through')
         }
         const checkbox = MiniDo.buildCheckbox(item.state)
+        const removeButton = MiniDo.builtButton('✕')
         li.appendChild(span)
+        li.appendChild(removeButton)
         li.setAttribute('data-id', item.id)
         ul.prepend(li)
         li.insertBefore(checkbox, span)
@@ -98,6 +107,14 @@ class MiniDo {
         this.appendItem(item)
     }
 
+    removeItem(itemId) {
+        const index = this.items.findIndex(obj => obj.id === itemId)
+        this.items.splice(index, 1)
+        this.sync()
+        const listItem = document.querySelector(`li[data-id='${itemId}']`)
+        ul.removeChild(listItem)
+    }
+
 }
 
 const miniDo = new MiniDo()
@@ -120,5 +137,11 @@ ul.addEventListener('click', (event) => {
     if(event.target.classList.contains('item-check')) {
         miniDo.toggleStrike(event.target)
     }
+
+    if(event.target.classList.contains('remove-button')) {
+        miniDo.removeItem(event.target.parentNode.getAttribute('data-id'))
+    }
 })
+
+
 
