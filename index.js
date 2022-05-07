@@ -2,6 +2,8 @@ const itemTemplateLabel = document.querySelector('.new-item-template'),
     newItemInput = document.querySelector('.new-item-template input[type="text"]'),
     addButton = itemTemplateLabel.querySelector('button'),
     ul = document.querySelector('.list ul')
+    listsUl = document.querySelector('.lists ul')
+    newListButton = document.querySelector('.lists .lists-header button')
 
 class ElementBuilder {
     build(type, innerHTML, properties) {
@@ -19,6 +21,28 @@ class ElementBuilder {
     }
 }
 
+class Helper {
+    static getUniqueId() {
+        return (performance.now().toString(36)+Math.random().toString(36)).replace(/\./g,"");
+    }
+}
+
+class List {
+    newList(name) {
+        this.id = Helper.getUniqueId()
+        this.name = name
+        return this
+    }
+
+    serialize() {
+        return {
+            id: this.id,
+            name: this.name,
+            items: []
+        }
+    }
+}
+
 class MiniDo {
     constructor() {
         this.textColor = '#333'
@@ -26,7 +50,17 @@ class MiniDo {
         this.currentContent = ''
         this.items = []
         this.elementBuilder = new ElementBuilder()
-        this.populate()
+        this.list = new List()
+        this.lists = []
+        this.activeList = null
+        this.populateLists()
+    }
+
+    createList(name) {
+        const list = this.list.newList(name).serialize()
+        this.lists.push(list)
+        this.sync()
+        this.appendList(list)
     }
 
     toggleStrike(target) {
@@ -34,12 +68,18 @@ class MiniDo {
         const parent = element.parentNode;
         element.classList.toggle('strike-through')
         const index = this.items.findIndex(i => i.id === parent.getAttribute('data-id'))
-        this.items[index].state = !this.items[index].state
+        this.lists[this.activeListIndex].items[index].state = !this.lists[this.activeListIndex].items[index].state
         this.sync()
     }
-
-    static getUniqueId() {
-        return performance.now().toString(36)
+    
+    appendList(list) {
+        const li = this.elementBuilder.build('li')
+        const a = this.elementBuilder.build('a', list.name, [
+            {property: 'href', value: `#${list.id}`},
+            { property: 'class', value: 'list-link'}
+        ])
+        li.appendChild(a)
+        listsUl.prepend(li)
     }
 
     appendItem(item) {
@@ -69,16 +109,26 @@ class MiniDo {
     }
 
     sync() {
-        localStorage.setItem('miniDo_data', JSON.stringify(this.items))
+        localStorage.setItem('miniDo_data_lists', JSON.stringify(this.lists))
     }
 
     populate() {
-        const storedItems = localStorage.getItem('miniDo_data')
-        if(storedItems) {
-            this.items = JSON.parse(storedItems)
+        const activeList = this.lists[this.activeListIndex]
+        if(activeList.items.length) {
+            this.items = activeList.items
             this.items.forEach((item) => {
                 this.currentContent = item.content
                 this.appendItem(item)
+            })
+        }
+    }
+
+    populateLists() {
+        const storedLists = localStorage.getItem('miniDo_data_lists')
+        if(storedLists) {
+            this.lists = JSON.parse(storedLists)
+            this.lists.forEach((list) => {
+                this.appendList(list)
             })
         }
     }
@@ -89,22 +139,28 @@ class MiniDo {
         }
 
         const item = {
-            id: MiniDo.getUniqueId(),
+            id: Helper.getUniqueId(),
             content: this.currentContent,
             state: false
         }
 
-        this.items.push(item)
+        this.lists[this.activeListIndex].items.push(item)
+
         this.sync()
         this.appendItem(item)
     }
 
     removeItem(itemId) {
         const index = this.items.findIndex(obj => obj.id === itemId)
-        this.items.splice(index, 1)
+        this.lists[this.activeListIndex].items.splice(index, 1)
         this.sync()
         const listItem = document.querySelector(`li[data-id='${itemId}']`)
         ul.removeChild(listItem)
+    }
+
+    setActiveList(id) {
+        this.activeList = id
+        this.activeListIndex = this.lists.findIndex(list => list.id = id)
     }
 
 }
@@ -125,6 +181,14 @@ addButton.addEventListener('click', () => {
     miniDo.addItem()
 })
 
+newListButton.addEventListener('click', (event) => {
+    const newListInput = event.target.previousSibling
+    if(newListInput.value) {
+        miniDo.createList(newListInput.value)
+        newListInput.value = ''
+    }
+})
+
 ul.addEventListener('click', (event) => {
     if(event.target.classList.contains('item-check')) {
         miniDo.toggleStrike(event.target)
@@ -132,5 +196,18 @@ ul.addEventListener('click', (event) => {
 
     if(event.target.classList.contains('remove-button')) {
         miniDo.removeItem(event.target.parentNode.getAttribute('data-id'))
+    }
+})
+
+listsUl.addEventListener('click', event => {
+    console.log(event)
+    if(event.target.classList.contains('list-link')) {
+        const listElement = event.target,
+        id = listElement.getAttribute('href').replace('#', '')
+        const list = miniDo.lists.filter(el => el.id === id)[0]
+        miniDo.setActiveList(id)
+        miniDo.items = list.items
+        miniDo.populate()
+        console.log(miniDo)
     }
 })

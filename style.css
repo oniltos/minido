@@ -77,6 +77,32 @@ main ul li:hover button {
     outline: none;
 }
 
+/** Lists **/
+.lists h2 {
+    font-weight: 100;
+    text-align: center;
+}
+.lists .lists-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.lists .lists-header button {
+    margin-left: 10px;
+}
+
+.lists .lists-content {
+
+}
+
+/** Helper classes **/
+.hidden {
+    display: none;
+}
+
+/** Media Queries **/
+
 @media screen and (max-width: 979px) {
     main {
         width: 80vw;
