@@ -3,35 +3,30 @@ const itemTemplateLabel = document.querySelector('.new-item-template'),
     addButton = itemTemplateLabel.querySelector('button'),
     ul = document.querySelector('.list ul')
 
+class ElementBuilder {
+    build(type, innerHTML, properties) {
+        const el = document.createElement(type)
+        if(innerHTML) el.innerHTML = innerHTML
+        if(properties && properties.length) {
+            properties.forEach(prop => {
+                if(prop.flag && !prop.value) {
+                    return;
+                } 
+                el.setAttribute(prop.property, prop.value)
+            }) 
+        }
+        return el
+    }
+}
+
 class MiniDo {
     constructor() {
         this.textColor = '#333'
         this.accentColor = '#777'
         this.currentContent = ''
         this.items = []
+        this.elementBuilder = new ElementBuilder()
         this.populate()
-    }
-
-    static buildCheckbox(checked) {
-        const checkbox = document.createElement('input')
-        checkbox.type = 'checkbox'
-        checkbox.classList.add('item-check')
-        if(checked) {
-            checkbox.checked = true
-        }
-        return checkbox
-    }
-
-    static buildLi() {
-        const li = document.createElement('li')
-        return li
-    }
-
-    static builtButton(text) {
-        const button = document.createElement('button')
-        button.innerHTML = text
-        button.classList.add('remove-button')
-        return button
     }
 
     toggleStrike(target) {
@@ -48,14 +43,17 @@ class MiniDo {
     }
 
     appendItem(item) {
-        const li = MiniDo.buildLi()
-        const span =  this.buildSpan()
-        console.log(item)
+        const li = this.elementBuilder.build('li')
+        const span = this.elementBuilder.build('span', this.currentContent)
         if(item.state) {
             span.classList.add('strike-through')
         }
-        const checkbox = MiniDo.buildCheckbox(item.state)
-        const removeButton = MiniDo.builtButton('✕')
+        const checkbox = this.elementBuilder.build('input', null, [
+            {property: 'type', value: 'checkbox'},
+            {property: 'class', value: 'item-check'},
+            {property: 'checked', value: item.state, flag: true},
+        ])
+        const removeButton = this.elementBuilder.build('button', '✕', [{property: 'class', value: 'remove-button'}])
         li.appendChild(span)
         li.appendChild(removeButton)
         li.setAttribute('data-id', item.id)
@@ -64,12 +62,6 @@ class MiniDo {
         this.currentContent = ''
         newItemInput.value = ''
         newItemInput.focus()
-    }
-
-    buildSpan() {
-        const span = document.createElement('span')
-        span.innerText = this.currentContent
-        return span
     }
 
     setContent(value) {
@@ -142,6 +134,3 @@ ul.addEventListener('click', (event) => {
         miniDo.removeItem(event.target.parentNode.getAttribute('data-id'))
     }
 })
-
-
-
