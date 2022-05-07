@@ -44,7 +44,7 @@ class List {
 }
 
 class MiniDo {
-    constructor() {
+    constructor(activeId) {
         this.textColor = '#333'
         this.accentColor = '#777'
         this.currentContent = ''
@@ -53,6 +53,11 @@ class MiniDo {
         this.list = new List()
         this.lists = []
         this.activeList = null
+        this.getLists()
+        if(activeId) {
+            this.setActiveList(activeId)
+            this.populate()
+        }
         this.populateLists()
     }
 
@@ -113,9 +118,9 @@ class MiniDo {
     }
 
     populate() {
+        ul.innerHTML = ''
         const activeList = this.lists[this.activeListIndex]
         if(activeList.items.length) {
-            this.items = activeList.items
             this.items.forEach((item) => {
                 this.currentContent = item.content
                 this.appendItem(item)
@@ -123,10 +128,15 @@ class MiniDo {
         }
     }
 
-    populateLists() {
+    getLists() {
         const storedLists = localStorage.getItem('miniDo_data_lists')
         if(storedLists) {
             this.lists = JSON.parse(storedLists)
+        }
+    }
+
+    populateLists() {
+        if(this.lists.length) {
             this.lists.forEach((list) => {
                 this.appendList(list)
             })
@@ -160,12 +170,20 @@ class MiniDo {
 
     setActiveList(id) {
         this.activeList = id
-        this.activeListIndex = this.lists.findIndex(list => list.id = id)
+        this.activeListIndex = this.lists.findIndex(list => list.id === id)
+        this.items = this.lists[this.activeListIndex].items
     }
 
 }
 
-const miniDo = new MiniDo()
+let activeId = null
+
+if(window.location.hash) {
+    activeId = window.location.hash.replace('#', '')
+    document.querySelector('.lists').classList.add('hidden')
+}
+
+const miniDo = new MiniDo(activeId)
 
 newItemInput.addEventListener('keypress', (event) => {
     if(event.key === 'Enter') {
@@ -200,14 +218,10 @@ ul.addEventListener('click', (event) => {
 })
 
 listsUl.addEventListener('click', event => {
-    console.log(event)
     if(event.target.classList.contains('list-link')) {
         const listElement = event.target,
         id = listElement.getAttribute('href').replace('#', '')
-        const list = miniDo.lists.filter(el => el.id === id)[0]
         miniDo.setActiveList(id)
-        miniDo.items = list.items
         miniDo.populate()
-        console.log(miniDo)
     }
 })
